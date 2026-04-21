@@ -5,9 +5,12 @@ import { extractZip } from "../services";
 import { extractTextFromFile } from "../services";
 import { parseResumeWithGemini } from "../services/gemni.service";
 import { saveTalentProfile } from "../services/talentProfile.service";
+import { JobDescriptionInfoType } from "../types/jobDescriptionInfo.type";
+import { createJobDescription } from "../services/jobDescription.service";
 
 export async function generateData(req: Request, res: Response) {
     const files = req.files as Express.Multer.File[];
+    const jobDescription=req.body as JobDescriptionInfoType
 
     if (!files || files.length === 0) {
         return res.status(400).json({ message: "No files uploaded" });
@@ -48,8 +51,14 @@ export async function generateData(req: Request, res: Response) {
             }
         }
     }
-    const allText = results.map(r => r.content).join("\n\n")
-    const content = await parseResumeWithGemini(allText)
-    const saved= await saveTalentProfile(content)
-    return res.json({ saved });
+    const saved = await Promise.all(
+        results.map(async (r) => {
+            const parsed = await parseResumeWithGemini(r.content);
+            const profile = await saveTalentProfile(parsed);
+            return { file: r.file, profile };
+        })
+    );
+
+
+    return res.json({ saved ,jobDescription});
 }

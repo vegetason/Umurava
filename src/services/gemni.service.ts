@@ -1,12 +1,14 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import dotenv from "dotenv";
+import { TalentProfileType, TalentScore } from "../types/talent.types";
+import { JobDescriptionInfoType } from "../types/jobDescriptionInfo.type";
 
 dotenv.config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
+    model: "gemini-3.1-flash-lite-preview",
 });
 
 export const parseResumeWithGemini = async (text: any) => {
@@ -92,4 +94,59 @@ ${text}
     const parsed = JSON.parse(match[0]);
 
     return parsed;
+};
+
+export const generateScoreWithGemini = async (
+    talentInfo:TalentProfileType,
+    jobDescription: JobDescriptionInfoType
+) => {
+    const prompt = `
+You are a talent evaluation AI.
+
+Given the following talent profile and job description, generate a match score from 0 to 100 for each category and an overall score based on how well the talent fits the job.
+
+IMPORTANT RULES:
+- Return ONLY valid JSON
+- NO markdown
+- NO \`\`\`json
+- NO explanations
+
+Schema:
+{
+  "overallScore": number,
+  "breakdown": {
+    "skills": number,
+    "experience": number,
+    "education": number,
+    "projects": number,
+    "profileCompleteness": number
+  },
+  "summary": string
+}
+
+Talent Profile:
+${JSON.stringify(talentInfo, null, 2)}
+
+Job Description:
+${JSON.stringify(jobDescription, null, 2)}
+`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const raw = response.text();
+
+    const cleaned = raw
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
+
+    const match = cleaned.match(/\{[\s\S]*\}/);
+
+    if (!match) {
+        throw new Error("Gemini did not return valid JSON");
+    }
+
+    const parsed = JSON.parse(match[0]);
+
+    return parsed as TalentScore;
 };

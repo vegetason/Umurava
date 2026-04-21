@@ -4,6 +4,8 @@
     "moduleResolution": "NodeNext",
     "target": "ES6",
     "esModuleInterop": true,
-    "strict": true
+    "strict": true,
+    "outDir":"dist",
+    // "rootDir":"src"
   }
 }

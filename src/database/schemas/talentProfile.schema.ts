@@ -68,7 +68,19 @@ export const TalentProfileSchema = new Schema(
       linkedin: String,
       github: String,
       portfolio: String
-    }
+    },
+    talentScore: {
+      overallScore: { type: Number, default: 0 },
+      breakdown: {
+        skills: { type: Number, default: 0 },
+        experience: { type: Number, default: 0 },
+        education: { type: Number, default: 0 },
+        projects: { type: Number, default: 0 },
+        profileCompleteness: { type: Number, default: 0 }
+      },
+      summary: { type: String, default: "" }
+    },
+    jobDescription: { type: Schema.Types.ObjectId, ref: "JobDescription", default: null }
   },
   {
     timestamps: true
