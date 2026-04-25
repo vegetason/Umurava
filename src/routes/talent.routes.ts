@@ -2,7 +2,7 @@ import express from "express";
 import { generateData } from "../controllers/generateDataFromResume.controller";
 import { uploadResumes } from "../services/multer.service";
 import { generateScoreForAllTalents, generateScoreForOneTalent } from "../controllers/generateScore.controller";
-import { deleteTheTalent, deleteTalentsByJobDescriptionController, getTalentInfo, getTalents } from "../controllers/talentProfile.controller";
+import { deleteTheTalent, deleteTalentsByJobDescriptionController, getTalentInfo, getTalents, getTalentsByStatusController, updateTalentStatusController } from "../controllers/talentProfile.controller";
 
 let TalentRouter = express.Router();
 
@@ -13,6 +13,8 @@ TalentRouter.get('/getTalents', getTalents);
 TalentRouter.post('/generateScoreForAll', generateScoreForAllTalents);
 TalentRouter.delete('/deleteTalentsByJobDescription', deleteTalentsByJobDescriptionController);
 TalentRouter.delete('/deleteTalent', deleteTheTalent);
+TalentRouter.get('/getTalentByStatus',getTalentsByStatusController)
+TalentRouter.put('/updateTalentStatus',updateTalentStatusController)
 
 export default TalentRouter;
 

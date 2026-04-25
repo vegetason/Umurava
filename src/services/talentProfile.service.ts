@@ -53,3 +53,20 @@ export const deleteTalent=async (talentId:string)=>{
 export const deleteTalentsByJobDescription = async (jobDescriptionId: string) => {
     return await TalentProfile.deleteMany({ jobDescription: jobDescriptionId });
 };
+
+export const getTalentsByStatus = async (
+  status: "Pending" | "Screened" | "Shortlisted" | "Emailed" | "Rejected"
+) => {
+  return await TalentProfile.find({ status });
+};
+
+export const updateTalentStatus = async (
+  id: string,
+  status: "Pending" | "Screened" | "Shortlisted" | "Emailed" | "Rejected"
+) => {
+  return await TalentProfile.findByIdAndUpdate(
+    id,
+    { status },
+    { new: true }
+  );
+};

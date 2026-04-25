@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { deleteTalent, deleteTalentsByJobDescription, getRankedTalents, getTalentInfos } from "../services/talentProfile.service"
+import { deleteTalent, deleteTalentsByJobDescription, getRankedTalents, getTalentInfos, getTalentsByStatus, updateTalentStatus } from "../services/talentProfile.service"
 
 export const getTalentInfo=async(req:Request,res:Response)=>{
     try{
@@ -42,3 +42,43 @@ export const deleteTalentsByJobDescriptionController = async (req: Request, res:
     }
 };
 
+export const getTalentsByStatusController = async (req: Request, res: Response) => {
+  try {
+    const { status } = req.query;
+
+    if (!status) {
+      return res.status(400).json({ message: "Status is required" });
+    }
+
+    const talents = await getTalentsByStatus(
+      status as "Pending" | "Screened" | "Shortlisted" | "Emailed" | "Rejected"
+    );
+
+    return res.json({ talents });
+  } catch (err) {
+    return res.status(500).json({ message: "Internal Server Error", error: err });
+  }
+};
+
+export const updateTalentStatusController = async (req: Request, res: Response) => {
+  try {
+    const { talentId, status } = req.body;
+
+    if (!status || !talentId) {
+      return res.status(400).json({ message: "talentId and status are required" });
+    }
+
+    const updatedTalent = await updateTalentStatus(
+      talentId,
+      status as "Pending" | "Screened" | "Shortlisted" | "Emailed" | "Rejected"
+    );
+
+    if (!updatedTalent) {
+      return res.status(404).json({ message: "Talent not found" });
+    }
+
+    return res.json({ talent: updatedTalent });
+  } catch (err) {
+    return res.status(500).json({ message: "Internal Server Error", error: err });
+  }
+};

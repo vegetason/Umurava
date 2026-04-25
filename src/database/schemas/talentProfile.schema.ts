@@ -78,9 +78,14 @@ export const TalentProfileSchema = new Schema(
         projects: { type: Number, default: 0 },
         profileCompleteness: { type: Number, default: 0 }
       },
-      summary: { type: String, default: "" }
+      summary: { type: String, default: "" },
     },
-    jobDescription: { type: Schema.Types.ObjectId, ref: "JobDescription", default: null }
+    jobDescription: { type: Schema.Types.ObjectId, ref: "JobDescription", default: null },
+    status: {
+        type: String,
+        enum: ["Shortlisted", "Screened", "Rejected", "Emailed","Pending"],
+        default: "Pending"
+      },
   },
   {
     timestamps: true

@@ -29,7 +29,12 @@ export interface Project {
   role: string;
   link: string;
 }
-
+export type TalentStatus =
+  | "Pending"
+  | "Screened"
+  | "Shortlisted"
+  | "Emailed"
+  | "Rejected";
 export interface TalentProfileType {
   firstName: string;
   lastName: string;
@@ -52,6 +57,7 @@ export interface TalentProfileType {
   };
   talentScore:TalentScore;
   jobDescription?: string | null;
+  status:TalentStatus
   createdAt?: Date;
   updatedAt?: Date;
 }
